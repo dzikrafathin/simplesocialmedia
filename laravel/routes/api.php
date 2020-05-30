@@ -48,6 +48,8 @@ Route::delete('/media/{media}','API\MediaController@destroy');
 Route::post('login','API\UserController@login');
 Route::get('login','API\UserController@infoLogin');
 
+Route::get('/postingan/{postingan}/disukai','API\PostinganLikeController@disukai');
+
 Route::apiResource('user','API\UserController');
 Route::apiResource('user.postingan','API\UserPostinganController')->only(['index', 'store']);
 Route::apiResource('user.media','API\UserMediaController')->only(['index']);

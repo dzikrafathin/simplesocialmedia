@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -32,18 +33,31 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = User::create($request->except('password','foto'));
+        $validator = Validator::make($request->all(),[
+            'email' => 'required|unique:App\User,email',
+            'password' => 'required'
+        ]);
 
-        if ($request->hasFile('foto')) {
-            $path = $request->foto->store('public');
-            $user->foto = $path;
+        if ($validator->fails()) {
+
+            return response()->json($validator->errors(), 422);
+
+        } else {
+
+            $user = User::create($request->except('password','foto'));
+
+            if ($request->hasFile('foto')) {
+                $path = $request->foto->store('public');
+                $user->foto = $path;
+            }
+
+            $user->password = Hash::make($request->password);
+            $user->api_token = Str::random(40);
+            $user->save();
+
+            return response()->json($user->api_token,201);
+
         }
-
-        $user->password = Hash::make($request->password);
-        $user->api_token = Str::random(40);
-        $user->save();
-
-        return response()->json($user->api_token,201);
     }
 
     /**
@@ -65,22 +79,36 @@ class UserController extends Controller
      */
 
     public function login(Request $request) {
-        $user = User::where('email',$request->email)->first();
 
-        if ($user) {
-            if (Hash::check($request->password,$user->password)) {
-                $user->api_token = Str::random(40);
-                $user->save();
-                return $user->api_token;
+        $validator = Validator::make($request->all(),[
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+
+            return response()->json($validator->errors(), 422);
+
+        } else {
+
+            $user = User::where('email',$request->email)->first();
+
+            if ($user) {
+                if (Hash::check($request->password,$user->password)) {
+                    $user->api_token = Str::random(40);
+                    $user->save();
+                    return $user->api_token;
+                } else {
+                    return response()->json([
+                        "password" => ["Password salah"]
+                    ],422);
+                }
             } else {
                 return response()->json([
-                    "error" => "Password salah"
+                    "email" => ["E-Mail tidak terdaftar"]
                 ],422);
             }
-        } else {
-            return response()->json([
-                "error" => "E-Mail tidak terdaftar"
-            ],422);
+
         }
     }
 

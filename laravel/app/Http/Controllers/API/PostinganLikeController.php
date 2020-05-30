@@ -14,46 +14,27 @@ class PostinganLikeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, Postingan $postingan)
+    public function index(Postingan $postingan)
     {
-        $user = $request->user();
 
-        $ret = array();
-        $ret_like = array();
+        return response()->json($postingan->like()->with('user:id,nama,foto')->get());
+
+    }
+
+    public function disukai(Request $request, Postingan $postingan) {
+        $user = $request->user();
+        $ret = false;
 
         if ($user) {
             $liked = $user->like()->where('postingan_id',$postingan->id)->first();
-        } else {
-            $liked = false;
+
+            if ($liked) {
+                $ret = true;
+            }
+
         }
 
-        if ($liked) {
-            $ret_like = [
-                "disukai" => true,
-                "likeId" => $liked->id
-            ];
-        } else {
-            $ret_like = [
-                "disukai" => false,
-                "likeId" => null
-            ];
-        }
-
-        /*
-        foreach ($postingan->like as $like) {
-            $tmp = [
-                "id" => $like->id,
-                "userId" => $like->user->id,
-                "nama" => $like->user->nama,
-                "foto" => $like->user->foto
-            ];
-            array_push($ret,$tmp);
-        }*/
-
-        return response()->json([
-            "userLike" => $ret_like,
-            "daftarSuka" => $postingan->like()->with('user:id,nama,foto')->get()
-        ],200);
+        return response()->json($ret,200);
     }
 
     /**
