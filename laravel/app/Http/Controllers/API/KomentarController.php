@@ -10,10 +10,7 @@ use App\Komentar;
 class KomentarController extends Controller
 {
     public function indexPostinganKomentar(Request $request, Postingan $postingan) {
-        foreach ($postingan->komentar as $komentar) {
-            $komentar->user;
-        }
-        return $postingan->komentar;
+        return $postingan->komenar();
     }
 
     public function indexUserKomentar(Request $request) {

@@ -46,6 +46,7 @@ Route::delete('/media/{media}','API\MediaController@destroy');
 */
 
 Route::post('login','API\UserController@login');
+Route::get('login','API\UserController@infoLogin');
 
 Route::apiResource('user','API\UserController');
 Route::apiResource('user.postingan','API\UserPostinganController')->only(['index', 'store']);

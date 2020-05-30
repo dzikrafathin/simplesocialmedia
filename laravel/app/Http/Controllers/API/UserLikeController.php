@@ -16,18 +16,10 @@ class UserLikeController extends Controller
      */
     public function index(User $user)
     {
-        $ret = array();
-        foreach ($user->like as $like) {
-            $tmp = [
-                "id" => $like->id,
-                "isi" => $like->postingan->isi,
-                "userId" => $like->user_id,
-                "nama" => $like->postingan->user->nama,
-                "foto" => $like->postingan->user->foto
-            ];
-            array_push($ret,$tmp);
-        }
-        return response()->json($ret,200);
+        
+        return response()->json($user->like()
+                                        ->with('postingan.user:id,nama,foto')
+                                        ->get(),200);
     }
 
     /**

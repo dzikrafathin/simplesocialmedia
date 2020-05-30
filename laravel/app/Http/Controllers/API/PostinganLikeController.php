@@ -17,16 +17,16 @@ class PostinganLikeController extends Controller
     public function index(Request $request, Postingan $postingan)
     {
         $user = $request->user();
-        
+
         $ret = array();
         $ret_like = array();
-        
+
         if ($user) {
             $liked = $user->like()->where('postingan_id',$postingan->id)->first();
         } else {
             $liked = false;
         }
-        
+
         if ($liked) {
             $ret_like = [
                 "disukai" => true,
@@ -39,6 +39,7 @@ class PostinganLikeController extends Controller
             ];
         }
 
+        /*
         foreach ($postingan->like as $like) {
             $tmp = [
                 "id" => $like->id,
@@ -47,11 +48,11 @@ class PostinganLikeController extends Controller
                 "foto" => $like->user->foto
             ];
             array_push($ret,$tmp);
-        }
+        }*/
 
         return response()->json([
             "userLike" => $ret_like,
-            "daftarSuka" => $ret
+            "daftarSuka" => $postingan->like()->with('user:id,nama,foto')->get()
         ],200);
     }
 
@@ -65,20 +66,23 @@ class PostinganLikeController extends Controller
     {
         $user = $request->user();
         $error = $user->like()->where('postingan_id',$postingan->id)->first();
-        
+
         if ($error) {
-            
+
             return response()->json([
                 "error" => "Sudah disukai"
             ],422);
 
         } else {
-            
+
             $like = $user->like()->create();
             $like->postingan()->associate($postingan);
             $like->save();
 
-            return response()->json($like,200);
+            $id = $like->id;
+            $ret = Like::with('user:id,nama,foto')->where('id','=',$id)->get();
+
+            return response()->json($ret[0],200);
         }
 
     }
@@ -117,7 +121,7 @@ class PostinganLikeController extends Controller
         $user = $request->user();
         $id = $like->user->id;
         if ($user->id == $id) {
-            $like->destroy();
+            $like->delete();
         } else {
             return response()->json([
                 "error" => "Tidak diizinkan"

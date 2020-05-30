@@ -16,7 +16,7 @@ class PostinganKomentarController extends Controller
      */
     public function index(Postingan $postingan)
     {
-        $ret = array();
+        /*$ret = array();
         foreach ($postingan->komentar as $komentar) {
             $tmp = [
                 "id" => $komentar->id,
@@ -26,8 +26,10 @@ class PostinganKomentarController extends Controller
                 "foto" => $komentar->user->foto
             ];
             array_push($ret,$tmp);
-        }
-        return response()->json($ret,200);
+        }*/
+        return response()->json($postingan->komentar()
+                                            ->with('user:id,nama,foto')
+                                            ->get(),200);
     }
 
     /**
@@ -44,7 +46,10 @@ class PostinganKomentarController extends Controller
         $komentar->postingan()->associate($postingan);
         $komentar->save();
 
-        return response()->json($komentar,201);
+        $id = $komentar->id;
+        $ret = Komentar::with('user:id,nama,foto')->where('id','=',$id)->get();
+
+        return response()->json($ret[0],201);
     }
 
     /**

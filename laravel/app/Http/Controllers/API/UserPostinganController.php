@@ -16,7 +16,7 @@ class UserPostinganController extends Controller
      */
     public function index(User $user)
     {
-        return $user->postingan;
+        return $user->postingan()->with('user:id,nama,foto')->get();
     }
 
     /**
@@ -29,6 +29,7 @@ class UserPostinganController extends Controller
     {
         $user = $request->user();
         $postingan = $user->postingan()->create($request->except('media'));
+
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $media) {
                 $url = $media->store('public');
@@ -39,7 +40,10 @@ class UserPostinganController extends Controller
                 ]);
             }
         }
-        return response()->json($postingan,201);
+        $id = $postingan->id;
+
+        $ret = Postingan::with('user:id,nama,foto')->where('id','=',$id)->get();
+        return response()->json($ret[0],201);
     }
 
     /**

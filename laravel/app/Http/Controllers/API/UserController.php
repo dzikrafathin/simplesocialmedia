@@ -33,7 +33,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $user = User::create($request->except('password','foto'));
-        
+
         if ($request->hasFile('foto')) {
             $path = $request->foto->store('public');
             $user->foto = $path;
@@ -66,18 +66,12 @@ class UserController extends Controller
 
     public function login(Request $request) {
         $user = User::where('email',$request->email)->first();
-        
+
         if ($user) {
             if (Hash::check($request->password,$user->password)) {
                 $user->api_token = Str::random(40);
                 $user->save();
-                return response()->json([
-                    "id" => $user->id,
-                    "nama" => $user->nama,
-                    "email" => $user->email,
-                    "foto" => $user->foto,
-                    "api_token" => $user->api_token
-                ],200);
+                return $user->api_token;
             } else {
                 return response()->json([
                     "error" => "Password salah"
@@ -112,7 +106,7 @@ class UserController extends Controller
             }
         }
         $user->save();
-        return response()->json($user,200);        
+        return response()->json($user,200);
     }
 
     /**

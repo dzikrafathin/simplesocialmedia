@@ -16,18 +16,9 @@ class UserKomentarController extends Controller
      */
     public function index(User $user)
     {
-        $ret = array();
-        foreach($user->komentar as $komentar) {
-            $tmp = [
-                "id" => $komentar->id,
-                "isi" => $komentar->isi,
-                "userId" => $komentar->postingan->user_id,
-                "nama" => $komentar->postingan->user->nama,
-                "foto" => $komentar->postingan->user->foto
-            ];
-            array_push($ret,$tmp);
-        }
-        return response()->json($ret,200);
+        return $user->komentar()
+                ->with(['postingan.user:id,nama,foto'])
+                ->get();
     }
 
     /**

@@ -19,7 +19,7 @@ class PostinganController extends Controller
      */
     public function index(Request $request)
     {
-        return Postingan::all();
+        return Postingan::with('user:id,nama,foto')->latest()->get();
     }
 
     /**
