@@ -67,9 +67,6 @@ export default {
     UserLogin
   },
   created() {
-    if (this.isLoggedIn) {
-      this.isiUser()
-    }
   },
   data() {
     return {
@@ -83,7 +80,6 @@ export default {
   },
   methods : {
     ...mapActions({
-      isiUser: 'isiUser',
       logout : 'logout'
     }),
     keluar() {

@@ -34,8 +34,5 @@ export default {
             return this.user != null
         }
     },
-    created() {
-        console.log(this.udahSiap)
-    }
 }
 </script>
