@@ -23,7 +23,16 @@ class UserController extends Controller
     }
 
     public function infoLogin(Request $request) {
-        return $request->user();
+        
+        $user = $request->user();
+
+        /*return [
+            "id" => $user->id,
+            "nama" => $user->nama,
+            "email" => $user->email,
+            "foto" => $user->foto
+        ];*/
+        return $user;
     }
     /**
      * Store a newly created resource in storage.
@@ -34,6 +43,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(),[
+            'nama' => 'required',
             'email' => 'required|unique:App\User,email',
             'password' => 'required'
         ]);
@@ -55,7 +65,12 @@ class UserController extends Controller
             $user->api_token = Str::random(40);
             $user->save();
 
-            return response()->json($user->api_token,201);
+            $ret = [   
+                "user" => $user,
+                "token" => $user->api_token
+            ];
+
+            return response()->json($ret,201);
 
         }
     }
@@ -97,7 +112,14 @@ class UserController extends Controller
                 if (Hash::check($request->password,$user->password)) {
                     $user->api_token = Str::random(40);
                     $user->save();
-                    return $user->api_token;
+
+                    $ret = [   
+                        "user" => $user,
+                        "token" => $user->api_token
+                    ];
+
+                    return $ret;
+
                 } else {
                     return response()->json([
                         "password" => ["Password salah"]
@@ -110,7 +132,7 @@ class UserController extends Controller
             }
 
         }
-    }
+    } 
 
     /**
      * Update the specified resource in storage.

@@ -14,9 +14,43 @@ class UserPostinganController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $user)
+    public function index(Request $request, User $user)
     {
-        return $user->postingan()->with('user:id,nama,foto')->get();
+        //return 
+        $daftarPostingan = $user->postingan()->with('user:id,nama,foto')->get();
+        
+        $keluaran = [];
+
+        foreach ($daftarPostingan as $postingan) {
+
+            $user = $request->user();
+            $suka = null;
+
+            if ($user) {
+                $suka = $user->like()
+                            ->where('postingan_id',$postingan->id)
+                            ->first();
+                if ($suka) {
+                    $suka = $suka->id;
+                }
+            }
+
+            $jumlahSuka = $postingan->like()->count();
+            $jumlahKomentar = $postingan->komentar()->count();
+
+            $data = [
+                "suka" => $suka,
+                "jumlahSuka" => $jumlahSuka,
+                "jumlahKomentar" => $jumlahKomentar
+            ];
+
+            $postingan = $postingan->toArray();
+
+            $postingan["data"] = $data;
+
+            array_push($keluaran,$postingan);
+        }
+        return response()->json($keluaran,200);
     }
 
     /**
@@ -27,6 +61,17 @@ class UserPostinganController extends Controller
      */
     public function store(Request $request, User $user)
     {
+        $validator = Validator::make($request->all(),[
+            'isi' => 'required',
+            'media.*' => 'image|mimes:jpeg,png,jpg,gif,svg'
+        ]);
+
+        if ($validator->fails()) {
+
+            return response()->json($validator->errors(), 422);
+        
+        }
+        
         $user = $request->user();
         $postingan = $user->postingan()->create($request->except('media'));
 

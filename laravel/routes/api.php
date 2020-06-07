@@ -45,18 +45,22 @@ Route::delete('/komentar/{komentar}','API\KomentarController@hapusKomentar');
 Route::delete('/media/{media}','API\MediaController@destroy');
 */
 
-Route::post('login','API\UserController@login');
+/*Route::post('login','API\UserController@login');
 Route::get('login','API\UserController@infoLogin');
+Route::post('profile','API\UserController@update');
+*/
+Route::get('user/profile','API\UserController@infoLogin');
+Route::post('user/login','API\UserController@login');
+Route::post('user/register','API\UserController@store');
+Route::post('user/profile','API\UserController@update');
 
-Route::get('/postingan/{postingan}/disukai','API\PostinganLikeController@disukai');
-
-Route::apiResource('user','API\UserController');
-Route::apiResource('user.postingan','API\UserPostinganController')->only(['index', 'store']);
+Route::apiResource('user','API\UserController')->except(['store','update']);
+Route::apiResource('user.postingan','API\UserPostinganController')->only(['index']);
 Route::apiResource('user.media','API\UserMediaController')->only(['index']);
 Route::apiResource('user.like','API\UserLikeController')->only(['index']);
 Route::apiResource('user.komentar','API\UserKomentarController')->only(['index']);
 
-Route::apiResource('postingan','API\PostinganController')->except(['store']);
+Route::apiResource('postingan','API\PostinganController');
 Route::apiResource('postingan.like','API\PostinganLikeController')->only(['index', 'store', 'destroy'])->shallow();
 Route::apiResource('postingan.media','API\PostinganMediaController')->only(['index','store', 'destroy'])->shallow();
 Route::apiResource('postingan.komentar','API\PostinganKomentarController')->except(['show'])->shallow();

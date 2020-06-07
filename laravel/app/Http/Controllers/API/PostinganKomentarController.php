@@ -76,7 +76,9 @@ class PostinganKomentarController extends Controller
 
         if ($komentar->user_id == $user->id) {
             $komentar->update($request->all());
-            return response()->json($komentar,200);
+            $komentar = Komentar::with('user:id,nama,foto')->where('id','=',$komentar->id)->get();
+
+            return response()->json($komentar[0],200);
         } else {
             return response()->json([
                 "error" => "Tidak berhak mengubah komentar orang lain"

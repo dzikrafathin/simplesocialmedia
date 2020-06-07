@@ -28,18 +28,20 @@ class PostinganMediaController extends Controller
      */
     public function store(Request $request, Postingan $postingan)
     {
+        $ret = [];
         $user = $request->user();
         if ($user->id == $postingan->user_id) {
             if ($request->hasFile('media')) {
                 foreach ($request->file('media') as $media) {
                     $url = $media->store('public');
-                    $postingan->media()->create([
+                    $data = $postingan->media()->create([
                         "nama" => $media->getClientOriginalName(),
                         "url" => $url,
                         "jenis" => "foto"
                     ]);
+                    array_push($ret,$data);
                 }
-                return response()->json($postingan->media,201);
+                return response()->json($ret,201);
             }
         } else {
             return response()->json([
