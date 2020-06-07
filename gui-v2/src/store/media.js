@@ -29,7 +29,7 @@ export default {
                         commit('index_media',res.data)
                         resolve(res)
                     } else {
-                        reject(false)
+                        resolve(null)
                     }
                 }).catch(err => {
                     reject(err)

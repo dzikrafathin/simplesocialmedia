@@ -26,6 +26,6 @@ export default {
         })
     },
     logout() {
-        
+        return Client.post('/user/logout')
     },
 };

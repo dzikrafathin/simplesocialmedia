@@ -51,6 +51,7 @@ Route::post('profile','API\UserController@update');
 */
 Route::get('user/profile','API\UserController@infoLogin');
 Route::post('user/login','API\UserController@login');
+Route::post('user/logout','API\UserController@logout');
 Route::post('user/register','API\UserController@store');
 Route::post('user/profile','API\UserController@update');
 

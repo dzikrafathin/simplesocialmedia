@@ -91,6 +91,18 @@ export default {
         .then(res => {
           commit('isi_user',res.data) 
         })
+      },
+      logout({commit}) {
+        return new Promise((resolve, reject) => {
+          userRepo.logout()
+          .then(() => {
+            commit('logout')
+            delete Client.defaults.headers.common['Authorization']
+            resolve(true)
+          }).catch(err => {
+            reject(err)
+          })
+        })
       }
     },
     getters : {

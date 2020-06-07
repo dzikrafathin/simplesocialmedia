@@ -29,8 +29,10 @@ export default {
   }),
   created() {
     this.indexMedia(this.postinganId)
-    .then(() =>{
-      this.adaFoto = true
+    .then((res) =>{
+      if (res) {
+        this.adaFoto = true
+      }
     })
   },
   methods : {

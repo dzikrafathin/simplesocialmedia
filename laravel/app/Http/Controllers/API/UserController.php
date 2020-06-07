@@ -165,6 +165,15 @@ class UserController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
+    public function logout(Request $request) {
+        $user = $request->user();
+
+        $user->api_token = null;
+        $user->save();
+
+        return response()->json(null,204);
+    }
+
     public function destroy(Request $request, User $user)
     {
         $user = $request->user();

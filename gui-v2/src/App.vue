@@ -25,7 +25,7 @@
               <v-list-item-title>Profil</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link>
+        <v-list-item link @click="keluar">
           <v-list-item-content>
               <v-list-item-title>Logout</v-list-item-title>
           </v-list-item-content>
@@ -83,8 +83,15 @@ export default {
   },
   methods : {
     ...mapActions({
-      isiUser: 'isiUser'
-    })
+      isiUser: 'isiUser',
+      logout : 'logout'
+    }),
+    keluar() {
+      this.logout()
+      .then(() => {
+        this.$router.push('/login')
+      })
+    }
   }
 }
 </script>
