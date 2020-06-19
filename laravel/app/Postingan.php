@@ -8,6 +8,8 @@ class Postingan extends Model
 {
     protected $fillable = ['isi'];
 
+    protected $with = ['user'];
+
     public function user() {
         return $this->belongsTo('App\User');
     }
@@ -17,10 +19,16 @@ class Postingan extends Model
     }
 
     public function komentar() {
-        return $this->hasMany('App\Komentar');
+        return $this->belongsToMany('App\User','komentars')
+            ->using('App\Komentar')
+            ->as('komentar')
+            ->withPivot('id', 'isi')
+            ->withTimestamps();
     }
 
     public function like() {
-        return $this->hasMany('App\Like');
+        return $this->belongsToMany('App\User','likes')
+            ->as('like')
+            ->withTimestamps();
     }
 }

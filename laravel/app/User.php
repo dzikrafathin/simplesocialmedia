@@ -34,7 +34,19 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'api_token'
+        'password', 
+        'remember_token', 
+        'api_token',
+        'email', 
+        'password', 
+        'tempat_lahir', 
+        'tanggal_lahir', 
+        'alamat', 
+        'no_hp', 
+        'email_verified_at',
+        'super_user',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -51,11 +63,17 @@ class User extends Authenticatable
     }
 
     public function komentar() {
-        return $this->hasMany('App\Komentar');
+        return $this->belongsToMany('App\Postingan','komentars')
+            ->using('App\Komentar')
+            ->as('komentar')
+            ->withPivot('isi')
+            ->withTimestamps();
     }
 
     public function like() {
-        return $this->hasMany('App\Like');
+        return $this->belongsToMany('App\Postingan','likes')
+            ->as('like')
+            ->withTimestamps();
     }
 
     public function media() {

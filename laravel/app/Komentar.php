@@ -2,17 +2,10 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class Komentar extends Model
+class Komentar extends Pivot
 {
-    protected $fillable = ['isi'];
-
-    public function user() {
-        return $this->belongsTo('App\User');
-    }
-
-    public function postingan() {
-        return $this->belongsTo('App\Postingan');
-    }
+    public $incrementing = true;
+    protected $table = 'komentars';
 }
