@@ -41,8 +41,11 @@ Route::post('user/logout','V2\UserController@logout');
 Route::post('user/daftar','V2\UserController@store');
 Route::post('user/profil','V2\UserController@update');
 
+Route::get('user/{user}/postingan','V2\UserPostinganController@index');
+
 Route::apiResource('postingan','V2\PostinganController');
 Route::apiResource('postingan.komentar','V2\PostinganKomentarController')->shallow();
+Route::apiResource('postingan.media','V2\PostinganMediaController')->shallow();
 
 Route::get('postingan/{postingan}/like','V2\PostinganLikeController@index');
 Route::post('postingan/{postingan}/like','V2\PostinganLikeController@like');
