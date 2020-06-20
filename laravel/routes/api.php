@@ -35,13 +35,19 @@ Route::apiResource('postingan.komentar','API\PostinganKomentarController')->exce
 
 // V2
 
-Route::get('user/profil','V2\UserController@profil');
-Route::post('user/login','V2\UserController@login');
-Route::post('user/logout','V2\UserController@logout');
-Route::post('user/daftar','V2\UserController@store');
-Route::post('user/profil','V2\UserController@update');
+Route::get('user/profil','V2\ProfileController@profil');
+Route::post('user/login','V2\ProfileController@login');
+Route::post('user/logout','V2\ProfileController@logout');
+Route::post('user/daftar','V2\ProfileController@daftar');
+Route::post('user/profil','V2\ProfileController@update');
 
+Route::get('user/like','V2\ProfileLikeController@index');
+Route::get('user/komentar','V2\ProfileKomentarController@index');
+
+Route::get('user','V2\UserController@index');
+Route::get('user/{user}','V2\UserController@show');
 Route::get('user/{user}/postingan','V2\UserPostinganController@index');
+Route::get('user/{user}/media','V2\UserMediaController@index');
 
 Route::apiResource('postingan','V2\PostinganController');
 Route::apiResource('postingan.komentar','V2\PostinganKomentarController')->shallow();

@@ -7,5 +7,11 @@ use Illuminate\Http\Request;
 
 class ProfileLikeController extends Controller
 {
-    //
+    public function index(Request $request) {
+        $user = $request->user();
+
+        return response()->json(
+            $user->like, 200
+        );
+    }
 }

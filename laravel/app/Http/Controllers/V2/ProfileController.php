@@ -5,12 +5,20 @@ namespace App\Http\Controllers\V2;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+use App\User;
+
 class ProfileController extends Controller
 {
     
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api')->except(['login','daftar']);
     }
     
     private function detail(User $user) {
@@ -33,7 +41,7 @@ class ProfileController extends Controller
 
     }
 
-    public function login(Request $request) {
+    public function login(Login $request) {
         
         $validator = Validator::make($request->all(),[
             'email' => 'required',
@@ -74,7 +82,7 @@ class ProfileController extends Controller
         }
     }
 
-    public function register(Request $request) {
+    public function daftar(Request $request) {
 
         $validator = Validator::make($request->all(),[
             'nama' => 'required',
@@ -145,4 +153,14 @@ class ProfileController extends Controller
         return response()->json($this->detail($user),200);
 
     }
+
+    public function logout(Request $request) {
+        $user = $request->user();
+
+        $user->api_token = null;
+        $user->save();
+
+        return response()->json(null,204);
+    }
+
 }
