@@ -35,7 +35,7 @@ class LikeController extends Controller
         $user = $request->user();
         if ($postingan->like->contains($user)) {
             return response()->json([
-                "error" => "sudah disukai"
+                "message" => "Postingan sudah disukai"
             ],422);
         } else {
             $postingan->like()->attach($user);
@@ -57,7 +57,7 @@ class LikeController extends Controller
             ,200);
         } else {
             return response()->json([
-                "error" => "belum disukai"
+                "message" => "Postingan belum disukai"
             ],422);
         }
     }

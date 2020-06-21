@@ -32,7 +32,8 @@ class TambahPostingan extends FormRequest
     public function messages() {
         return [
             'required' => 'Kolom wajib diisi',
-            'image' => 'File harus berupa gambar jpeg,png,jpg, atau gif'
+            'image' => 'File harus berupa gambar',
+            'mimes' => 'Format yang diperbolehkan adalah jpeg,png,jpg,gif'
         ];
     }
 }

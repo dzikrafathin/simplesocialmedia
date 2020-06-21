@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Postingan;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Media;
 
-class HapusPostingan extends FormRequest
+class HapusMedia extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,8 +14,8 @@ class HapusPostingan extends FormRequest
      */
     public function authorize()
     {
-        $postingan = $this->route('postingan');
-        return $postingan->user_id == $this->user()->id;
+        $media = Media::findOrFail($this->route('media'));
+        return $media->postingan->user_id == $this->user()->id;
     }
 
     /**

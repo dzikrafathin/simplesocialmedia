@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Postingan;
 use Illuminate\Foundation\Http\FormRequest;
 
-class HapusPostingan extends FormRequest
+class TambahMedia extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +25,17 @@ class HapusPostingan extends FormRequest
     public function rules()
     {
         return [
-            //
+            'media' => 'required',
+            'media.*' => 'image|mimes:jpeg,png,jpg,gif,svg'
         ];
     }
+
+    public function messages() {
+        return [
+            'required' => 'Wajib memasukan file foto',
+            'image' => 'File harus berupa gambar',
+            'mimes' => 'Format yang diperbolehkan adalah jpeg,png,jpg,gif'
+        ];
+    }
+
 }

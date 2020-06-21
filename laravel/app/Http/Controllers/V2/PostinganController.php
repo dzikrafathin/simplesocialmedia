@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V2;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 use App\Postingan;
 use App\User;
@@ -101,30 +102,12 @@ class PostinganController extends Controller
             }
         }
 
-        return response()->json($this->detail($postingan, $user),201);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Postingan  $postingan
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Postingan $postingan)
-    {
-
-        
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Postingan  $postingan
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Postingan $postingan)
-    {
-        //
+        return response()->json(
+            [
+                "message" => "Postingan berhasil ditambahkan",
+                "data" => $this->detail($postingan, $user)
+            ]
+        ,201);
     }
 
     /**
@@ -136,9 +119,16 @@ class PostinganController extends Controller
      */
     public function update(UbahPostingan $request, Postingan $postingan)
     {
+        $user = $request->user();
+        
         $postingan->update($request->all());
 
-        return response()->json($this->detail($postingan, $user));
+        return response()->json(
+            [
+                "message" => "Postingan berhasil diubah",
+                "data" => $this->detail($postingan, $user)
+            ]
+        ,200);
     }
 
     /**
@@ -153,9 +143,11 @@ class PostinganController extends Controller
             Storage::delete($media->url);
             $media->delete();
         }
+
         foreach($postingan->like as $like) {
             $like->delete();
         }
+
         foreach($postingan->komentar as $komentar) {
             $komentar->delete();
         }

@@ -29,4 +29,10 @@ class UbahPostingan extends FormRequest
             'isi' => 'required'
         ];
     }
+
+    public function messages() {
+        return [
+            'required' => 'Kolom wajib diisi'
+        ];
+    }
 }

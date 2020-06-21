@@ -11,6 +11,9 @@ use App\Postingan;
 use App\Media;
 use App\User;
 
+use App\Http\Requests\TambahMedia;
+use App\Http\Requests\HapusMedia;
+
 class PostinganMediaController extends Controller
 {
     
@@ -19,66 +22,48 @@ class PostinganMediaController extends Controller
         $this->middleware('auth:api');
     }
 
-    private function cekIzin(User $user, Postingan $postingan) {
-        return $user->id == $postingan->user_id;
-    }
-    
+
     public function index(Postingan $postingan) {
         return response()->json($postingan->media,200);
     }
 
-    public function store(Request $request, Postingan $postingan) {
-
-        $validator = Validator::make($request->all(),[
-            'media' => 'required',
-            'media.*' => 'image|mimes:jpeg,png,jpg,gif,svg'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
+    public function store(TambahMedia $request, Postingan $postingan) {
 
         $user = $request->user();
         $ret = [];
 
-        if ($this->cekIzin($user, $postingan)) {
-
-            if ($request->hasFile('media')) {
-                foreach ($request->file('media') as $media) {
-                    $url = $media->store('public');
-                    $data = $postingan->media()->create([
-                        "nama" => $media->getClientOriginalName(),
-                        "url" => $url,
-                        "jenis" => "foto"
-                    ]);
-                    array_push($ret,$data);
-                }
-                return response()->json($ret,201);
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $media) {
+                $url = $media->store('public');
+                $data = $postingan->media()->create([
+                    "nama" => $media->getClientOriginalName(),
+                    "url" => $url,
+                    "jenis" => "foto"
+                ]);
+                array_push($ret,$data);
             }
-
-        } else {
             return response()->json([
-                "error" => "Tidak diizinkan"
-            ],403);
+                "message" => "Foto-foto berhasil ditambahkan kedalam postingan",
+                "data" => $ret
+            ],201);
         }
-
     }
 
     public function destroy(Request $request, $media) {
 
         $user = $request->user();
-        $media = Media::find($media);
+        $media = Media::findOrFail($media);
         
-        if ($this->cekIzin($user, $media->postingan)) {
+        if ($user->id == $media->postingan->user_id) {
             Storage::delete($media->url);
             $media->delete();
-            return response()->json(null,204);
         } else {
             return response()->json([
-                "error" => "Tidak diizinkan"
+                "message" => "Anda tidak diizinkan melakukan aksi ini"
             ],403);
         }
-
+        
+        return response()->json(null,204);
     }
 
 }
