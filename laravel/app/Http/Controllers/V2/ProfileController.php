@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+
+use App\Http\Requests\Login;
+use App\Http\Requests\Daftar;
+use App\Http\Requests\UbahProfil;
 use App\User;
 
 class ProfileController extends Controller
@@ -43,98 +47,82 @@ class ProfileController extends Controller
 
     public function login(Login $request) {
         
-        $validator = Validator::make($request->all(),[
-            'email' => 'required',
-            'password' => 'required'
-        ]);
+        $user = User::where('email',$request->email)->first();
 
-        if ($validator->fails()) {
+        if (Hash::check($request->password,$user->password)) {
 
-            return response()->json($validator->errors(), 422);
-
-        } else {
-
-            $user = User::where('email',$request->email)->first();
-
-            if ($user) {
-                if (Hash::check($request->password,$user->password)) {
-                    $user->api_token = Str::random(40);
-                    $user->save();
-
-                    $ret = [   
-                        "user" => $user,
-                        "token" => $user->api_token
-                    ];
-
-                    return $ret;
-
-                } else {
-                    return response()->json([
-                        "password" => ["Password salah"]
-                    ],422);
-                }
-            } else {
-                return response()->json([
-                    "email" => ["E-Mail tidak terdaftar"]
-                ],422);
-            }
-
-        }
-    }
-
-    public function daftar(Request $request) {
-
-        $validator = Validator::make($request->all(),[
-            'nama' => 'required',
-            'email' => 'required|unique:App\User,email',
-            'password' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-
-            return response()->json($validator->errors(), 422);
-
-        } else {
-
-            $user = User::create($request->except('password','foto'));
-
-            if ($request->hasFile('foto')) {
-                $path = $request->foto->store('public');
-                $user->foto = $path;
-            }
-
-            $user->password = Hash::make($request->password);
             $user->api_token = Str::random(40);
             $user->save();
 
-            $ret = [   
-                "user" => $user,
-                "token" => $user->api_token
+            $ret = [
+                "message" => "Login berhasil",
+                "data" => [
+                    "user" => $user,
+                    "token" => $user->api_token
+                ]   
             ];
 
-            return response()->json($ret,201);
+            return $ret;
 
+        } else {
+                
+            return response()->json([
+                "message" => "Terjadi kesalahan",
+                "errors" => [
+                    "password" => ["Password yang anda masukan salah"]
+                ],
+            ],422);
+            
         }
+        
     }
 
-    public function update(Request $request) {
-        
-        $validator = Validator::make($request->all(),[
-            "nama" => 'required',
-            "email" => 'required',
-            "tempat_lahir" => 'required',
-            "tanggal_lahir" => 'required',
-            "alamat" => 'required',
-            "no_hp" => 'required'
-        ]);
+    public function daftar(Daftar $request) {
 
-        if ($validator->fails()) {
+        $user = User::create($request->except('password','foto'));
 
-            return response()->json($validator->errors(), 422);
-
+        if ($request->hasFile('foto')) {
+            $path = $request->foto->store('public');
+            $user->foto = $path;
         }
-        
+
+        $user->password = Hash::make($request->password);
+        $user->api_token = Str::random(40);
+        $user->save();
+
+        $ret = [
+            "message" => "Pendaftaran berhasil",
+            "data" => [
+                "user" => $user,
+                "token" => $user->api_token
+            ]   
+        ];
+
+        return response()->json(
+            $ret,201
+        );
+
+    }
+
+    public function update(UbahProfil $request) {
+                
         $user = $request->user();
+
+        $user2 = User::where('email',$request->email)->first();
+
+        if ($user2) {
+            if ($user->id != $user2->id) {
+
+                $ret = [
+                    "message" => "Terjadi kesalahan",
+                    "errors" => [
+                        "email" => "Alamat email ini sudah terdaftar"
+                    ]   
+                ];
+
+                return response()->json($ret,422);
+            }
+        }
 
         $user->update($request->except('password','foto'));
         
@@ -142,6 +130,7 @@ class ProfileController extends Controller
             $path = $request->foto->store('public');
             $user->foto = $path;
         }
+        
         if ($request->has('password')) {
             if ($request->filled('password')) {
                 $user->password = Hash::make($request->password);
@@ -150,7 +139,12 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return response()->json($this->detail($user),200);
+        return response()->json([
+            "message" => "Profil berhasil diubah",
+            "data" => [
+                "user" => $this->detail($user)
+            ]
+        ],200);
 
     }
 

@@ -3,7 +3,12 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
+
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -51,12 +56,38 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        
         if ($exception instanceof ModelNotFoundException) {
+
             return response()->json([
-                'error' => 'Data tidak ditemukan'
+                "message" => "Data tidak ditemukan"
             ], 404);
+
+        } else if ($exception instanceof ValidationException) {
+
+            return response()->json([
+                "message" => "Data yang dimasukan tidak valid",
+                "errors" => $exception->errors()
+            ], 422);
+
+        } else if ($exception instanceof AuthorizationException) {
+
+            return response()->json([
+                "message" => "Anda tidak diizinkan melakukan aksi ini",
+            ], 403);
+
+        } else if ($exception instanceof AuthenticationException) {
+
+            return response()->json([
+                "message" => "Anda belum melakukan login",
+            ], 401);
+
         }
         
         return parent::render($request, $exception);
+        /*return response()->json([
+            "message" => $exception->getMessage(),
+        ]);*/
+        
     }
 }

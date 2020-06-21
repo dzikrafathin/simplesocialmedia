@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\V2;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+
 use App\Postingan;
 use App\User;
-use Illuminate\Http\Request;
-
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\TambahPostingan;
+use App\Http\Requests\UbahPostingan;
+use App\Http\Requests\HapusPostingan;
 
 class PostinganController extends Controller
 {
@@ -82,20 +84,9 @@ class PostinganController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TambahPostingan $request)
     {
-        
-        $validator = Validator::make($request->all(),[
-            'isi' => 'required',
-            'media.*' => 'image|mimes:jpeg,png,jpg,gif,svg'
-        ]);
 
-        if ($validator->fails()) {
-
-            return response()->json($validator->errors(), 422);
-        
-        }
-        
         $user = $request->user();
         $postingan = $user->postingan()->create($request->except('media'));
 
@@ -143,34 +134,11 @@ class PostinganController extends Controller
      * @param  \App\Postingan  $postingan
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Postingan $postingan)
+    public function update(UbahPostingan $request, Postingan $postingan)
     {
-        $validator = Validator::make($request->all(),[
-            'isi' => 'required',
-        ]);
-        
-        if ($validator->fails()) {
+        $postingan->update($request->all());
 
-            return response()->json($validator->errors(), 422);
-        
-        }
-        
-        $user = $request->user();
-
-        if ($this->cekIzin($user,$postingan)) {
-
-            $postingan->update($request->all());
-
-            return response()->json($this->detail($postingan, $user));
-
-        } else {
-
-            return response()->json([
-                "error" => "Tidak diijinkan"
-            ],403);
-
-        }
-
+        return response()->json($this->detail($postingan, $user));
     }
 
     /**
@@ -179,29 +147,22 @@ class PostinganController extends Controller
      * @param  \App\Postingan  $postingan
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Postingan $postingan)
+    public function destroy(HapusPostingan $request, Postingan $postingan)
     {
-        $user = $request->user();
-
-        if ($this->cekIzin($user,$postingan)) {
-            foreach($postingan->media as $media) {
-                Storage::delete($media->url);
-                $media->delete();
-            }
-            foreach($postingan->like as $like) {
-                $like->delete();
-            }
-            foreach($postingan->komentar as $komentar) {
-                $komentar->delete();
-            }
-
-            $postingan->delete();
-
-            return response()->json(null,204);
-        } else {
-            return response()->json([
-                "error" => "Tidak diijinkan"
-            ],403);
+        foreach($postingan->media as $media) {
+            Storage::delete($media->url);
+            $media->delete();
         }
+        foreach($postingan->like as $like) {
+            $like->delete();
+        }
+        foreach($postingan->komentar as $komentar) {
+            $komentar->delete();
+        }
+
+        $postingan->delete();
+
+        return response()->json(null,204);
+        
     }
 }
