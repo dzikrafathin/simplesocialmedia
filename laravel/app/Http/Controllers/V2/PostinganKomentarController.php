@@ -10,6 +10,10 @@ use App\Postingan;
 use App\Komentar;
 use App\User;
 
+use App\Http\Requests\TambahKomentar;
+use App\Http\Requests\UbahKomentar;
+use App\Http\Requests\HapusKomentar;
+
 class PostinganKomentarController extends Controller
 {
     
@@ -18,24 +22,12 @@ class PostinganKomentarController extends Controller
         $this->middleware('auth:api');
     }
     
-    private function cekIzin(User $user, Komentar $komentar) {
-        return $user->id == $komentar->user_id;
-    }
-
     public function index(Postingan $postingan) {
         return $postingan->komentar()->get();
     }
 
-    public function store(Request $request, Postingan $postingan) {
-        
-        $validator = Validator::make($request->all(),[
-            'isi' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
+    public function store(TambahKomentar $request, Postingan $postingan) {
+         
         $user = $request->user();
         
         $komentar = new Komentar;
@@ -49,58 +41,31 @@ class PostinganKomentarController extends Controller
         $user = $user->toArray();
         $user['komentar'] = $komentar;
         
-        return response()->json($user,201);
+        return response()->json([
+            "message" => "Komentar berhasil ditambahkan kedalam postingan",
+            "data" => $user
+        ],201);
     }
 
-    public function update(Request $request, Komentar $komentar) {
+    public function update(UbahKomentar $request, Komentar $komentar) {
         
-        $validator = Validator::make($request->all(),[
-            'isi' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
         $user = $request->user();
+
+        $komentar->isi = $request->isi;
+        $komentar->save();
+
+        $user = $user->toArray();
+        $user['komentar'] = $komentar;
         
-        if ($this->cekIzin($user,$komentar)) {
-
-            $komentar->isi = $request->isi;
-            $komentar->save();
-
-            $user = $user->toArray();
-            $user['komentar'] = $komentar;
-        
-            return response()->json($user,200);
-
-        } else {
-
-            return response()->json([
-                "error" => "Tidak diijinkan"
-            ],403);
-
-        }
+        return response()->json($user,200);
     
     }
 
-    public function destroy(Request $request, Komentar $komentar) {
+    public function destroy(HapusKomentar $request, Komentar $komentar) { 
 
-        $user = $request->user();
+        $komentar->delete();
 
-        if ($this->cekIzin($user,$komentar)){
-
-            $komentar->delete();
-
-            return response()->json(null,204);
-
-        } else {
-
-            return response()->json([
-                "error" => "Tidak diijinkan"
-            ],403);
-            
-        }
+        return response()->json(null,204);
     }
 
 }
