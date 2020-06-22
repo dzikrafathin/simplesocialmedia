@@ -57,7 +57,10 @@ class PostinganKomentarController extends Controller
         $user = $user->toArray();
         $user['komentar'] = $komentar;
         
-        return response()->json($user,200);
+        return response()->json([
+            "message" => "Isi komentar berhasil diubah",
+            "data" => $user
+        ],200);
     
     }
 

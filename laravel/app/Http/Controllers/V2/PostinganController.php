@@ -144,14 +144,8 @@ class PostinganController extends Controller
             $media->delete();
         }
 
-        foreach($postingan->like as $like) {
-            $like->delete();
-        }
-
-        foreach($postingan->komentar as $komentar) {
-            $komentar->delete();
-        }
-
+        $postingan->like()->detach();
+        $postingan->komentar()->detach();
         $postingan->delete();
 
         return response()->json(null,204);

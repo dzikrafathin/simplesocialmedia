@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Postingan;
 use App\User;
 
-class LikeController extends Controller
+class PostinganLikeController extends Controller
 {
 
     public function __construct()

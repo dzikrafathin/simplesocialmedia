@@ -33,7 +33,8 @@ class ProfileController extends Controller
             "tempat_lahir" => $user->tempat_lahir,
             "tanggal_lahir" => $user->tanggal_lahir,
             "alamat" => $user->alamat,
-            "no_hp" => $user->no_hp
+            "no_hp" => $user->no_hp,
+            "foto" => $user->foto
         ];
     }
     
