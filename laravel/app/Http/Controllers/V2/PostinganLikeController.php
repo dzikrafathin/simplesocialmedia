@@ -39,7 +39,7 @@ class PostinganLikeController extends Controller
             ],422);
         } else {
             $postingan->like()->attach($user);
-            echo $postingan->like->contains($user);
+            //echo $postingan->like->contains($user);
             
             return response()->json(
                 $this->detail($postingan, true)

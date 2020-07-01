@@ -1,22 +1,41 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Beranda from '../views/Beranda.vue'
 
 Vue.use(VueRouter)
 
   const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    component: Beranda,
+    children : [
+      {
+        path : '',
+        name: 'Beranda Postingan',
+        component : () => import('../views/beranda/BerandaPostingan.vue')
+      },
+      {
+        path : 'profil',
+        component : () => import('../views/profil/Profil.vue'),
+        children : [
+          {
+            path : '',
+            name : 'Biodata User',
+            component : () => import('../views/profil/Biodata.vue')
+          },
+          {
+            path : 'foto',
+            name : 'Galeri Foto',
+            component : () => import('../views/profil/GaleriFoto.vue')
+          }
+        ]
+      }
+    ]
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path : '/login',
+    name : 'Halaman Login',
+    component : () => import('../views/login/Base.vue')
   }
 ]
 

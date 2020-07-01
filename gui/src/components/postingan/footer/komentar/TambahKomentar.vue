@@ -1,0 +1,30 @@
+<template>
+    <v-row
+        no-gutters
+    >
+        <v-col
+            class="pa-2"
+            md="10"
+        >
+            <v-textarea
+                hide-details="auto"
+                dense
+                outlined
+                rows="1"
+                auto-grow
+                prepend-icon="mdi-comment"
+                label="Tulis Komentar"
+            >
+            </v-textarea>
+        </v-col>
+        <v-col
+            md="2"
+            align-self="center"
+        >
+            <v-btn
+                color="primary"
+                text
+            >Kirim</v-btn>
+        </v-col>
+    </v-row>
+</template>
